@@ -29,9 +29,6 @@ func (s *salesSource) getLatestTransaction() (transactionId string, units int, t
 	return
 }
 
-// notes
-//
-
 func main() {
 	h, err := histogram([]salesSource{}, histBinDefault, histSizeDefault)
 	if err != nil {
