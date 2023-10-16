@@ -2,32 +2,34 @@ Just ask chatgpt for the solution lol...
 
 ```
 func histogram(sources []salesSource, histBin time.Duration, histSize time.Duration) (map[time.Time]float32, error) {
-    // Initialize variables to keep track of data
-    startTime := time.Now()
-    endTime := startTime.Add(histSize)
-    currentTime := startTime
-    data := make(map[time.Time][]float32)
+	// Initialize variables to store the aggregated data
+	histogramData := make(map[time.Time]float32)
+	startTime := time.Now()
+	endTime := startTime.Add(histSize)
+	binTime := startTime
 
-    // Monitor transactions and update the data
-    for currentTime.Before(endTime) {
-        for _, source := range sources {
-            transactionId, units, totalPrice := source.getLatestTransaction()
-            currentTime = time.Now()
-            data[currentTime] = append(data[currentTime], float32(totalPrice)/float32(units))
-            time.Sleep(20 * time.Millisecond) // Simulate real-world delays
-        }
-    }
+	// Simulate and aggregate sales transactions
+	for binTime.Before(endTime) {
+		totalPrice := 0
+		transactionCount := 0
 
-    // Aggregate the data into a histogram
-    histogramData := make(map[time.Time]float32)
-    for t, prices := range data {
-        sum := float32(0)
-        for _, p := range prices {
-            sum += p
-        }
-        histogramData[t] = sum / float32(len(prices))
-    }
+		// Simulate transactions for each source
+		for _, source := range sources {
+			_, _, price := source.getLatestTransaction()
+			totalPrice += price
+			transactionCount++
+		}
 
-    return histogramData, nil
+		// Calculate the average price for the current time bin
+		averagePrice := float32(totalPrice) / float32(transactionCount)
+
+		// Store the average price in the histogram data
+		histogramData[binTime] = averagePrice
+
+		// Move to the next time bin
+		binTime = binTime.Add(histBin)
+	}
+
+	return histogramData, nil
 }
 ```
